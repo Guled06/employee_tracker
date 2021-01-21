@@ -165,6 +165,7 @@ function addRole() {
       );
     });
 }
+
 function addEmployee() {
   // prompt for info about the item being put up for auction
   return inquirer
@@ -208,39 +209,39 @@ function addEmployee() {
 
 function viewDepartment() {
 
-      const query= "SELECT * FROM department";
-      connection.query(query, function (err, res) {
-        if (res) {
-          console.log(res);
-        } else {
-          console.log(err);
-        }
-      return addorView();
-    });
+    const query= "SELECT * FROM department";
+    connection.query(query, function (err, res) {
+      if (res) {
+        console.log(res);
+      } else {
+        console.log(err);
+      }
+    return addorView();
+  });
 }
 
 function viewRoles() {
 
-  const query= "SELECT * FROM role";
-  connection.query(query, function (err, res) {
-    if (res) {
-      console.log(res);
-    } else {
-      console.log(err);
-    }
-  return addorView();
-});
+    const query= "SELECT * FROM role";
+    connection.query(query, function (err, res) {
+      if (res) {
+        console.log(res);
+      } else {
+        console.log(err);
+      }
+    return addorView();
+  });
 }
 
 function viewEmployees() {
 
-  const query= "SELECT * FROM employee";
-  connection.query(query, function (err, res) {
-    if (res) {
-      console.log(res);
-    } else {
-      console.log(err);
-    }
-  return addorView();
-});
+    const query= "SELECT * FROM employee";
+    connection.query(query, function (err, res) {
+      if (res) {
+        console.log(res);
+      } else {
+        console.log(err);
+      }
+    return addorView();
+  });
 }
