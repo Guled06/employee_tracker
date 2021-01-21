@@ -55,7 +55,7 @@ function start() {
       name: 'add',
       type: 'list',
       message: 'What do you want to add?',
-      choices: ['Add Department', 'Add Role', 'Add Employee']
+      choices: ['Add Department', 'Add Role', 'Add Employee', 'EXIT']
     })
     .then((answer) => {
 
@@ -65,7 +65,10 @@ function start() {
         return addRole();
       } else if (answer.add === 'Add Employee') {
         return addEmployee();
+      } else if (answer.add === 'EXIT') {
+        return addorView();
       } else {
+
         connection.end(); 
       }
     })
@@ -82,7 +85,7 @@ function view() {
       name: 'view',
       type: 'list',
       message: 'What do you want to view?',
-      choices: ['View Departments', 'View Roles', 'View Employees']
+      choices: ['View Departments', 'View Roles', 'View Employees', 'EXIT']
     })
     .then((answer) => {
 
@@ -92,8 +95,10 @@ function view() {
         return viewRoles();
       } else if (answer.view === 'View Employees') {
         return viewEmployees();
+      } else if (answer.view === 'EXIT') {
+        return addorView();
       } else {
-        connection.end(); 
+         connection.end(); 
       }
     })
     .catch((error) => {
