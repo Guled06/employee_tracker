@@ -1,5 +1,7 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+const cTable = require('console.table');
+var figlet = require('figlet');
 
 // create the connection information for the sql database
 const connection = mysql.createConnection({
@@ -13,7 +15,16 @@ const connection = mysql.createConnection({
 
   // Your password
   password: 'password',
-  database: 'employee_trackerDB',
+  database: 'employeesDB',
+});
+
+figlet('Go BIG or Go HOME!', function(err, data) {
+  if (err) {
+      console.log('Something went wrong...');
+      console.dir(err);
+      return;
+  }
+  console.log(data)
 });
 
 // connect to the mysql server and sql database
@@ -85,15 +96,15 @@ function view() {
       name: 'view',
       type: 'list',
       message: 'What do you want to view?',
-      choices: ['View Departments', 'View Roles', 'View Employees', 'EXIT']
+      choices: ['View Employees By Departments', 'View Employees By Roles', 'View All Employees', 'EXIT']
     })
     .then((answer) => {
 
-      if (answer.view === 'View Departments') {
+      if (answer.view === 'View Employees By Departments') {
         return viewDepartment();
-      } else if (answer.view === 'View Roles') {
+      } else if (answer.view === 'View Employees By Roles') {
         return viewRoles();
-      } else if (answer.view === 'View Employees') {
+      } else if (answer.view === 'View All Employees') {
         return viewEmployees();
       } else if (answer.view === 'EXIT') {
         return addorView();
@@ -150,6 +161,11 @@ function addRole() {
         type: 'input',
         message: 'What is the salary you want to add?'
       },
+      {
+        name: 'department',
+        type: 'input',
+        message: 'What is the department ID you want to add?'
+      },
     ])
     .then((answer) => {
       // when finished prompting, insert a new item into the db with that info
@@ -157,7 +173,8 @@ function addRole() {
         'INSERT INTO role SET ?',
         {
           title: answer.role,
-          salary: answer.salary
+          salary: answer.salary,
+          department_id: answer.department
         },
         (err) => {
           if (err) {
@@ -186,6 +203,11 @@ function addEmployee() {
         message: 'What is the last name of the employee you want to add?'
       },
       {
+        name: 'role_id',
+        type: 'input',
+        message: 'What is the role ID of the employee you want to add?'
+      },
+      {
         name: 'manager_id',
         type: 'input',
         message: 'What is the manager ID of the employee you want to add?'
@@ -198,6 +220,7 @@ function addEmployee() {
         {
           first_name: answer.first_name,
           last_name: answer.last_name,
+          role_id: answer.role_id,
           manager_id: answer.manager_id
         },
         (err) => {
@@ -214,10 +237,10 @@ function addEmployee() {
 
 function viewDepartment() {
 
-    const query= "SELECT * FROM department";
+    const query = `SELECT department.name AS Department_Name , employee.first_name AS First_Name, employee.last_name AS Last_Name FROM employee LEFT JOIN department ON department.id = employee.id`;
     connection.query(query, function (err, res) {
       if (res) {
-        console.log(res);
+        console.table(res);
       } else {
         console.log(err);
       }
@@ -227,10 +250,10 @@ function viewDepartment() {
 
 function viewRoles() {
 
-    const query= "SELECT * FROM role";
+    const query = `SELECT e.id AS ID, r.title AS Title, d.name AS Department, r.salary AS Salary, CONCAT(m.first_name, ' ', m.last_name) AS Manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON d.id = r.department_id LEFT JOIN employee m ON m.id = e.manager_id`;
     connection.query(query, function (err, res) {
       if (res) {
-        console.log(res);
+        console.table(res);
       } else {
         console.log(err);
       }
@@ -240,10 +263,17 @@ function viewRoles() {
 
 function viewEmployees() {
 
-    const query= "SELECT * FROM employee";
+  const query = `SELECT e.id AS ID, e.first_name AS First_Name, e.last_name AS Last_Name, r.title AS Title, d.name AS Department, r.salary AS Salary, CONCAT(m.first_name, ' ', m.last_name) AS Manager
+  FROM employee e
+  LEFT JOIN role r
+    ON e.role_id = r.id
+  RIGHT JOIN department d
+  ON d.id = r.department_id
+  LEFT JOIN employee m
+    ON m.id = e.manager_id`;
     connection.query(query, function (err, res) {
       if (res) {
-        console.log(res);
+        console.table(res);
       } else {
         console.log(err);
       }
